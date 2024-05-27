@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  KitchenManagerECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: kitchen-manager-server
+      ImageScanningConfiguration:
+        scanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Expire images older than 100th image",
+                "selection": {
+                  "tagStatus": "any",
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 100
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }

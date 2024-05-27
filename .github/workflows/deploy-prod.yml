@@ -1,0 +1,100 @@
+name: PROD Deployment
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "server/src/**"
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ECR_REPOSITORY: kitchen-manager-server
+  DOCKER_BUILD_CONTEXT: ./server
+  MANIFEST_BRANCH: main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: "main"
+
+      - name: Generate the image version
+        id: generate-image-version
+        run: |
+          COMMIT_SHA=${{ github.sha }}
+          echo "IMAGE_VERSION=${COMMIT_SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          audience: sts.amazonaws.com
+          aws-region: ap-northeast-2
+          role-to-assume: ${{ vars.ECR_ROLE_ARN }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Image
+        uses: docker/build-push-action@v5
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_VERSION: ${{ steps.generate-image-version.outputs.IMAGE_VERSION }}
+        with:
+          context: ${{ env.DOCKER_BUILD_CONTEXT }}
+          load: true
+          push: false
+          tags: ${{ env.REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_VERSION }}
+
+      - name: Push ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_VERSION: ${{ steps.generate-image-version.outputs.IMAGE_VERSION }}
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_VERSION }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Generate the image version
+        id: generate-image-version
+        run: |
+          COMMIT_SHA=${{ github.sha }}
+          echo "IMAGE_VERSION=${COMMIT_SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: NuviLabs/kitchen-manager-manifest
+          ref: ${{env.MANIFEST_BRANCH}}
+          token: ${{ secrets.GIT_TOKEN }}
+          path: kitchen-manager-manifest
+
+      - name: Set up values for helm
+        uses: mikefarah/yq@master
+        env:
+          IMAGE_VERSION: ${{ steps.generate-image-version.outputs.IMAGE_VERSION }}
+        with:
+          cmd: |
+            yq eval -i '.kitchenManagerServer.image.tag = strenv(IMAGE_VERSION)' kitchen-manager-manifest/charts/kitchen-manager-server/values_prod.yaml
+
+      - name: Commit and push to manifest repo
+        env:
+          IMAGE_VERSION: ${{ steps.generate-image-version.outputs.IMAGE_VERSION }}
+        run: |
+          cd kitchen-manager-manifest
+          git config --global user.name "kitchen-manager-server-action"
+          git config --global user.email "github-action@github.com"
+          git commit -am "Update production image tag to $IMAGE_VERSION"
+          git push origin ${{ env.MANIFEST_BRANCH }}

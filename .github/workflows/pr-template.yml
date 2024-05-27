@@ -1,0 +1,26 @@
+name: Update PR Description with Jira Link on Branch Name
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+
+env:
+  JIRA_URL: https://nuvilab.atlassian.net/browse
+  PROJECT_PREFIX: PKM-
+
+jobs:
+  update-description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update PR description
+        uses: tzkhan/pr-update-action@v2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          lowercase-branch: false
+          head-branch-regex: '${{ env.PROJECT_PREFIX }}\d+'
+          title-template: "[%headbranch%]"
+          title-update-action: "prefix"
+          body-template: |
+            [Jira Link %headbranch%](${{ env.JIRA_URL }}/%headbranch%)
+          body-update-action: "prefix"
+          body-uppercase-base-match: false

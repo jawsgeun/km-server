@@ -1,0 +1,26 @@
+name: Merge main branch into develop branch
+
+on:
+  workflow_dispatch:
+
+jobs:
+  merge-develop:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git identity
+        run: |
+          git config --global user.name 'KM Github Action'
+          git config --global user.email 'sugeun.jo@nuvilab.com'
+
+      - name: Merge main branch
+        run: |
+          git fetch origin
+          git checkout develop
+          git merge origin/main
+          git push origin develop

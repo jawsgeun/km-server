@@ -1,0 +1,178 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Server Debugger",
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "args": ["${workspaceFolder}/server/src/main.ts"],
+      "env": {
+        "TZ": "UTC",
+        "NODE_ENV": "local"
+      },
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}/server",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "[DEV] Server Debugger",
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "args": ["${workspaceFolder}/server/src/main.ts"],
+      "env": {
+        "TZ": "UTC",
+        "NODE_ENV": "development",
+        "DEBUG_FLAG": "true"
+      },
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}/server",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "SYNC_ARAMARK_DATA ",
+      "presentation": {
+        "group": "Job",
+        "order": 1
+      },
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "args": ["${workspaceFolder}/server/src/job-main.ts", "syncAramarkData"],
+      "env": {
+        "TZ": "UTC",
+        "NODE_ENV": "local"
+      },
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}/server",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "SYNC_ARAMARK_RAW_MENU ",
+      "presentation": {
+        "group": "Job",
+        "order": 2
+      },
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "args": [
+        "${workspaceFolder}/server/src/job-main.ts",
+        "syncAramarkRawMenu"
+      ],
+      "env": {
+        "TZ": "UTC",
+        "NODE_ENV": "local"
+      },
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}/server",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "SYNC_FOOD_DATA ",
+      "presentation": {
+        "group": "Job",
+        "order": 3
+      },
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "args": ["${workspaceFolder}/server/src/job-main.ts", "syncFoodData"],
+      "env": {
+        "TZ": "UTC",
+        "NODE_ENV": "local"
+      },
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}/server",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "CREATE_WEATHER_FORECAST ",
+      "presentation": {
+        "group": "Job",
+        "order": 4
+      },
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "args": [
+        "${workspaceFolder}/server/src/job-main.ts",
+        "createWeatherForecast"
+      ],
+      "env": {
+        "TZ": "UTC",
+        "NODE_ENV": "local"
+      },
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}/server",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "REFRESH_TODAY_WEATHER ",
+      "presentation": {
+        "group": "Job",
+        "order": 5
+      },
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "args": [
+        "${workspaceFolder}/server/src/job-main.ts",
+        "refreshTodayWeather"
+      ],
+      "env": {
+        "TZ": "UTC",
+        "NODE_ENV": "local"
+      },
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}/server",
+      "console": "integratedTerminal"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  kitchen_manager_mysql:
+    image: mysql:5.7
+    platform: linux/amd64
+    container_name: kitchen_manager_dev_db
+    environment:
+      MYSQL_DATABASE: kitchen_manager
+      MYSQL_ROOT_PASSWORD: 1234
+    ports:
+      - "13306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./initdb.d:/docker-entrypoint-initdb.d
+volumes:
+  mysql-data:
